@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#33A3E3</color>
+    <color name="colorPrimaryDark">#2F80ED</color>
+    <color name="colorPrimaryLight">#56CCF2</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorBackgroundLight">#f5f4f4</color>
+    <color name="colorBackground">#fffef8</color>
+    <color name="colorBackgroundDark">#fffcfc</color>
+    <color name="text_color_btn_dark">#f9000000</color>
+
+
+    <!-- MainCard Random Color value-->
+</resources>

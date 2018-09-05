@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView android:id="@+id/resultQuestion_txt"
+        android:text="Question"
+        android:textSize="19sp"
+        app:fontFamily="@font/courgette_regular"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:text="Answer:"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            app:fontFamily="@font/courgette_regular"
+            android:layout_height="wrap_content" />
+        <TextView android:id="@+id/resultAnswer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fontFamily="@font/courgette_regular"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:text="your Answer:"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fontFamily="@font/courgette_regular"/>
+        <TextView android:id="@+id/resultAnswerChoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fontFamily="@font/courgette_regular"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>

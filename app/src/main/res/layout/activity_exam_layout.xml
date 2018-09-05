@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<android.support.v4.view.ViewPager
+    android:id="@+id/exam_swiper_viewPager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_above="@id/exam_toolbar"/>
+
+<FrameLayout
+    android:id="@+id/exam_result_viewPager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_above="@id/exam_toolbar"
+    android:visibility="gone"/>
+
+
+
+
+
+<RelativeLayout android:id="@+id/exam_toolbar"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_alignParentBottom="true"
+    android:background="@color/colorPrimary">
+    <Button android:id="@+id/backword_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:gravity="start"
+        android:background="@drawable/ic_keyboard_arrow_left_white_48dp"/>
+
+    <TextView android:id="@+id/q_sts_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="0/0"
+        android:minWidth="80dp"
+        android:textColor="@android:color/primary_text_dark"
+        app:fontFamily="@font/courgette_regular"
+        android:gravity="center"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+
+    <Button
+        android:id="@+id/forward_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="@drawable/ic_keyboard_arrow_right_white_48dp" />
+    <Button android:id="@+id/finish_exam_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:text="Finish"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="28sp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        app:fontFamily="@font/courgette_regular"
+        android:background="@android:color/transparent"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
+
+</RelativeLayout>
