@@ -9,6 +9,9 @@
 
         <!-- <item name="android:navigationBarColor">@color/colorPrimary</item> -->
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/colorTextSecondary</item>
+        <item name="android:colorForeground">@android:color/tertiary_text_light</item>
     </style>
 
 <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
@@ -23,15 +26,15 @@
 
 
     <style name="MainCardSubTextTheme">
-        <item name="android:textSize">15sp</item>
-        <item name="android:textColor">#f1434446</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
     </style>
     
     <style name="Paper">
-       <item name="android:textColor">#f1434446</item>
+       <item name="android:textColor">@color/colorTextPrimary</item>
 
     </style>
 

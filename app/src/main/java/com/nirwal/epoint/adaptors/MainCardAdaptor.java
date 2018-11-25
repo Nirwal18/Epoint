@@ -3,7 +3,6 @@ package com.nirwal.epoint.adaptors;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,25 +10,14 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-import com.nirwal.epoint.ExamActivity;
-import com.nirwal.epoint.MainActivity;
+import com.nirwal.epoint.activities.ExamActivity;
+import com.nirwal.epoint.activities.MainActivity;
 import com.nirwal.epoint.MyApp;
 import com.nirwal.epoint.R;
-import com.nirwal.epoint.customViews.CustomRow;
-import com.nirwal.epoint.models.MainCard;
 import com.nirwal.epoint.models.ParentChildListItem;
-import com.nirwal.epoint.models.QuizLists;
 
-import java.io.Console;
 import java.util.ArrayList;
 
 public class MainCardAdaptor extends BaseAdapter {
@@ -77,7 +65,10 @@ public class MainCardAdaptor extends BaseAdapter {
         _mainCard =_mainCardList.get(position);
         _quizLists = _app.getSqlDb().readAllQuizListfromParentID(_mainCard.ChildId);
 
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_card,parent,false);
+        if(view == null){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_card,parent,false);
+        }
+
 
         mainCardHdr = view.findViewById(R.id.main_card_hdr);
         title = view.findViewById(R.id.main_card_title);

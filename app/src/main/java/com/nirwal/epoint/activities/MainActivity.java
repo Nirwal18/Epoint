@@ -1,12 +1,12 @@
-package com.nirwal.epoint;
+package com.nirwal.epoint.activities;
 
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,14 +15,17 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.nirwal.epoint.MyApp;
+import com.nirwal.epoint.R;
 import com.nirwal.epoint.database.DatabaseHelper;
 import com.nirwal.epoint.fragments.FavouritesFragment;
 import com.nirwal.epoint.fragments.HomeFragment;
 import com.nirwal.epoint.fragments.QuizListFragment;
-import com.nirwal.epoint.models.MainCard;
 import com.nirwal.epoint.models.ParentChildListItem;
 import com.nirwal.epoint.services.DataDownloadAndSaveTask;
 
@@ -56,35 +59,88 @@ public class MainActivity extends AppCompatActivity {
         _context = new WeakReference<>(this);
         app = (MyApp) _context.get().getApplication();
         _navigationView = findViewById(R.id.navigation_view);
-        _swiper = findViewById(R.id.home_page_swipe_refresh);
+        toolbar = findViewById(R.id.toolBar);
+        drawerLayout = findViewById(R.id.drawerLayout);
+
         _navigationView.setNavigationItemSelectedListener(onNavigationClickListener);
-        fm=getFragmentManager();
+        fm = getFragmentManager();
 
         initDrawer();
+        initSwiper();
         initHomeFragment();
+        initAppLinkFunction();
+
+        logFirebaseEvent();
+
+    }
+
+
+    /***
+     * to initialize webapp url linking functionality
+     */
+    private void initAppLinkFunction(){
+
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
+        if(appLinkData==null) return;
+        switch (appLinkData.toString()){
+            case "https://epoint.gq": break;
+            case "https://epoint.gq/home":break;
+            case "https://epoint.gq/home/main-list":break;
+            default:{
+                if(appLinkData.getLastPathSegment()!=null){
+                    startQuizListFragment(appLinkData.getLastPathSegment());
+                }}
+        }
+
+
+    }
 
 
 
+    public void startQuizListFragment(String data){
+        Bundle bundle= new Bundle();
+        bundle.putString("TITLE","Epoint app");
+        bundle.putString("ID",data);
+        _quizListFragment = new QuizListFragment();
+        _quizListFragment.setArguments(bundle);
+        ft= fm.beginTransaction();
+        ft.addToBackStack("QuizList"+quizListFragCount);
+        ft.setCustomAnimations(R.animator.enter_from_right,R.animator.exit_to_right,
+                R.animator.enter_from_left,R.animator.exit_to_left);
+        quizListFragCount++;
+        ft.replace(R.id.vPager,_quizListFragment,"QuizList").commit();
+    }
+
+
+    void initSwiper(){
+        _swiper = findViewById(R.id.home_page_swipe_refresh);
         _swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Fragment fragment = fm.findFragmentByTag("Home");
-                if(fragment!=null && fragment.isVisible())  {
-                    HomeFragment hm = (HomeFragment)fragment;
+                if (fragment != null && fragment.isVisible()) {
+                    HomeFragment hm = (HomeFragment) fragment;
 
-                    if(hm._dataDownloadTask.getStatus()!= DataDownloadAndSaveTask.Status.Running){
+                    if (hm._dataDownloadTask.getStatus() != DataDownloadAndSaveTask.Status.Running) {
                         hm._dataDownloadTask.start();
                     }
 
-                    }else{
+                } else {
                     _swiper.setRefreshing(false);
                 }
 
             }
         });
-
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     protected void onDestroy() {
@@ -98,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
         ft = null;
         _context.clear();
     }
+
 
     NavigationView.OnNavigationItemSelectedListener onNavigationClickListener = new NavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -124,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                     displayFavourites();
                     break;
                 }
+
             }
             drawerLayout.closeDrawers();
             return false;
@@ -132,12 +190,27 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //Option menu click listner
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.main_act_menu_notification:{
+                Intent i = new Intent(_context.get(),NotificationActivity.class);
+                _context.get().startActivity(i);
+                break;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     void initDrawer(){
-        toolbar = findViewById(R.id.toolBar);
-        drawerLayout = findViewById(R.id.drawerLayout);
+
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(_context.get(), drawerLayout,toolbar,R.string.open_drawer,R.string.close_drawer);
+        if(getSupportActionBar()!=null){ getSupportActionBar().setDisplayHomeAsUpEnabled(true); }
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(_context.get(),
+                drawerLayout,toolbar,R.string.open_drawer,R.string.close_drawer);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
     }
@@ -148,12 +221,11 @@ public class MainActivity extends AppCompatActivity {
         if(_homeFragment==null){
             _homeFragment = new HomeFragment();
         }
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE); // clear all backstack
         ft.replace(R.id.vPager,_homeFragment,"Home").commit();
     }
 
 
-
-    @SuppressLint("ResourceType")
     public void startQuizListFragment(ParentChildListItem quiz){
         Bundle bundle= new Bundle();
         bundle.putString("TITLE",quiz.Title);
@@ -162,27 +234,34 @@ public class MainActivity extends AppCompatActivity {
         _quizListFragment.setArguments(bundle);
         ft= fm.beginTransaction();
         ft.addToBackStack("QuizList"+quizListFragCount);
-        ft.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_right,R.anim.entrer_from_left,R.anim.exit_to_left);
+        ft.setCustomAnimations(R.animator.enter_from_right,R.animator.exit_to_right,
+                R.animator.enter_from_left,R.animator.exit_to_left);
         quizListFragCount++;
         ft.replace(R.id.vPager,_quizListFragment,"QuizList").commit();
     }
 
 
-    @SuppressLint("ResourceType")
     private void displayFavourites(){
         if(_favouritesFragment==null){
             _favouritesFragment= new FavouritesFragment();
         }
         ft=fm.beginTransaction();
         ft.addToBackStack("Favourites_fragment");
-        ft.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_right,R.anim.entrer_from_left,R.anim.exit_to_left);
+        ft.setCustomAnimations(R.animator.enter_from_right,R.animator.exit_to_right,
+                R.animator.enter_from_left,R.animator.exit_to_left);
         ft.replace(R.id.vPager,_favouritesFragment,"Favourites_fragment").commit();
     }
+
 
     public void setFavourites(ParentChildListItem card){
         app.getSqlDb().insertParaentListItemIntoDb(DatabaseHelper.TableType.Favourites,card);
         Toast.makeText(_context.get(),"Added to favourites",Toast.LENGTH_LONG).show();
     }
 
+    private  void logFirebaseEvent(){
+        Bundle bundle = new Bundle();
+        bundle.putInt("Android_ver", Build.VERSION.SDK_INT);
+        app.getFirebaseAnalytics().logEvent("App_launch", bundle);
+    }
 
 }

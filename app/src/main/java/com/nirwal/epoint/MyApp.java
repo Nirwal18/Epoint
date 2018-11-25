@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nirwal.epoint.database.DatabaseHelper;
 
@@ -12,6 +13,9 @@ public class MyApp extends Application {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseHelper sqlDb;
+
+    private FirebaseAnalytics _firebaseAnalytics;
+
     public static final String App_Name = "Epoint";
     public static final String CHANNEL_1_ID = "Channel1";
     public static final String CHANNEL_2_ID = "Channel2";
@@ -22,6 +26,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        _firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         sqlDb = new DatabaseHelper(this);
         createNotificationChannels();
     }
@@ -56,6 +61,7 @@ public class MyApp extends Application {
 
     }
 
-
-
+    public FirebaseAnalytics getFirebaseAnalytics() {
+        return _firebaseAnalytics;
+    }
 }

@@ -27,6 +27,9 @@ public class ExamResultAdaptor extends BaseAdapter{
 
     @Override
     public int getCount() {
+        if(_list==null){
+            return 0;
+        }
         return _list.size();
     }
 

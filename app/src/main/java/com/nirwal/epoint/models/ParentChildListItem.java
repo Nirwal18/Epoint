@@ -18,6 +18,9 @@ public class ParentChildListItem {
     public String ImageUrl ;
     public byte[] Image;
 
+    public int Favourites = 0;
+
+
     public boolean isVisible = false;
     public String Language;
 

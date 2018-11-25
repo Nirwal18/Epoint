@@ -8,13 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.nirwal.epoint.MainActivity;
+import com.nirwal.epoint.activities.MainActivity;
 import com.nirwal.epoint.MyApp;
 import com.nirwal.epoint.R;
 import com.nirwal.epoint.adaptors.MainCardAdaptor;
-import com.nirwal.epoint.database.DatabaseHelper;
 import com.nirwal.epoint.models.ParentChildListItem;
 import com.nirwal.epoint.services.DataDownloadAndSaveTask;
 import com.nirwal.epoint.services.IOnTaskMethods;
@@ -58,8 +56,6 @@ public class HomeFragment extends Fragment {
         _dataDownloadTask=null;
         listView=null;
         _items.clear();
-
-        //_mainActivity =null;
     }
 
     void init() {
@@ -68,7 +64,8 @@ public class HomeFragment extends Fragment {
         _dataDownloadTask.addEventListener(new IOnTaskMethods() {
             @Override
             public void onPostExecute(Object o) {
-                _context.get()._swiper.setRefreshing(false);
+                if(_context.get()._swiper !=null)_context.get()._swiper.setRefreshing(false);
+
                 loadListView();
             }
 
@@ -79,7 +76,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onPreExecute() {
-                _context.get()._swiper.setRefreshing(true);
+                if(_context.get()._swiper !=null)_context.get()._swiper.setRefreshing(true);
             }
         });
     }

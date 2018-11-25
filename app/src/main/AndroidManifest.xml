@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nirwal.epoint">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".StartScreenActivity"
+
+        <activity
+            android:name=".activities.SettingsActivity$StartScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -24,12 +26,41 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ExamActivity" />
-        <activity android:name=".LearningActivity"/>
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".activities.MainActivity">
+            <intent-filter android:autoVerify="true">
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="https"
+                    android:host="epoint.gq/home/quiz-list" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="epoint.gq" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.ExamActivity" android:noHistory="true"/>
+        <activity android:name=".activities.LearningActivity" />
+
+        <activity android:name=".activities.ResultActivity" />
+
+        <activity
+            android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait" />
-        <service android:name=".services.DataSyncService" android:exported="true" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <activity android:name=".activities.NotificationActivity" />
+
+        <service
+            android:name=".services.DataSyncService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
 
     </application>

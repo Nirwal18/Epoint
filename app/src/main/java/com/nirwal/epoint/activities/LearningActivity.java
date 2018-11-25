@@ -1,4 +1,4 @@
-package com.nirwal.epoint;
+package com.nirwal.epoint.activities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.nirwal.epoint.R;
 import com.nirwal.epoint.services.HtmlDownloadTask;
 
 import java.io.Console;
@@ -45,7 +46,8 @@ public class LearningActivity extends AppCompatActivity {
         //webview client must be called after load url
 
        // _learningArea.loadUrl("file:///android_asset/www/index.html");
-        _learningArea.loadUrl("https://www.google.com");
+
+        _learningArea.loadUrl("https://epoint.gq");
         _learningArea.setWebChromeClient(new WebChromeClient());
         _learningArea.setWebViewClient(new myWebClient()); // it enable it to open net page in it
     }
@@ -66,7 +68,7 @@ public class LearningActivity extends AppCompatActivity {
 
     public void downloadFile(View v){
         HtmlDownloadTask task = new HtmlDownloadTask();
-        task.execute("https://www.google.com");
+        task.execute("https://epoint.gq");
     }
 
 

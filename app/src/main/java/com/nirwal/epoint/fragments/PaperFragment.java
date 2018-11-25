@@ -1,7 +1,7 @@
 package com.nirwal.epoint.fragments;
 
-import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +10,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.nirwal.epoint.ExamActivity;
+import com.nirwal.epoint.activities.ExamActivity;
 import com.nirwal.epoint.R;
 import com.nirwal.epoint.models.Question;
 
@@ -20,10 +19,11 @@ import com.nirwal.epoint.models.Question;
 public class PaperFragment extends Fragment {
 
     private ExamActivity examActivity;
-    private TextView questionTextView;
+    private TextView questionTextView , _answerTxt;
     private Question question;
     private RadioGroup radioGroup;
     private RadioButton a;
+    ConstraintLayout _answerArea;
     private RelativeLayout relativeLayout;
     private int qNo;
 
@@ -46,6 +46,8 @@ public class PaperFragment extends Fragment {
         View v = inflater.inflate(R.layout.paper_fragment, container, false);
         Bundle bundle = getArguments();
 
+        _answerArea = v.findViewById(R.id.paper_answer_area);
+
         // Inflate the layout for this fragment
         radioGroup = v.findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -55,7 +57,9 @@ public class PaperFragment extends Fragment {
             }
         });
 
+
         questionTextView=v.findViewById(R.id.exam_question_txt1);
+        _answerTxt = v.findViewById(R.id.paper_answer_txt);
         relativeLayout = v.findViewById(R.id.imageRelativelayout);
 
         setAndUpdateView();
@@ -82,7 +86,7 @@ public class PaperFragment extends Fragment {
             index++;
         }
         questionTextView.setText("Q"+qNo+": "+question.Question);
-
+        _answerTxt.setText(question.getAnswerText());
         if(question.isImageavailable())
         {
             relativeLayout.setVisibility(View.GONE);
@@ -94,7 +98,10 @@ public class PaperFragment extends Fragment {
     }
 
 
-
+public void showAnswer(){
+    //v.setVisibility(View.GONE);
+    if(_answerArea!=null)_answerArea.setVisibility(View.VISIBLE);
+}
 
     @Override
     public void onDestroy() {

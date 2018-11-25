@@ -57,7 +57,7 @@ public class QuizListFragment extends Fragment{
         ArrayList<ParentChildListItem> list = app.getSqlDb().readAllQuizListfromParentID(id);
         //setting up recycle adaptor
         quizList.setLayoutManager(new LinearLayoutManager(_context.get()));
-        quizList.setAdapter(new QuizListAdaptor(list,_context.get()));
+        quizList.setAdapter(new QuizListAdaptor(list,_context.get(),QuizListFragment.class.getName()));
 
     }
 
