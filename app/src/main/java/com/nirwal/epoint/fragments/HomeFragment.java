@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        _context.get().setTitle(R.string.app_name);
+        _context.get().setTitle("Home");
     }
 
     @Override

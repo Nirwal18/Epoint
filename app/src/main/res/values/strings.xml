@@ -11,4 +11,15 @@
     <string name="answer">Answer :</string>
     <string name="show_answer">Show answer</string>
     <string name="zero">0</string>
+    <string name="rate_us">Rate us</string>
+    <string name="user_name_or_email_address">User name or email address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="create_account">Create account</string>
+    <string name="user_name">User name</string>
+    <string name="email_address">Email address</string>
+    <string name="mobile_number">Mobile number</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

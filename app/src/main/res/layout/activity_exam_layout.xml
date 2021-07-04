@@ -103,12 +103,6 @@
         android:layout_marginBottom="-2dp"
         android:layout_alignParentLeft="true" />
 
-<FrameLayout
-    android:id="@+id/exam_result_viewPager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@id/exam_toolbar"
-    android:visibility="gone"/>
 
 
 <RelativeLayout android:id="@+id/exam_toolbar"

@@ -41,7 +41,7 @@ public class ResultFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        examActivity =(ExamActivity)this.getActivity();
+
     }
 
     @Nullable

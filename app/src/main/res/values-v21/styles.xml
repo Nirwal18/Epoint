@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- <item name="android:navigationBarColor">@color/colorPrimary</item> -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <!--<item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>-->
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:textColorSecondary">@color/colorTextSecondary</item>
         <item name="android:colorForeground">@android:color/tertiary_text_light</item>

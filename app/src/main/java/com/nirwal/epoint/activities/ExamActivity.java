@@ -46,9 +46,7 @@ public class ExamActivity extends AppCompatActivity {
     private TextView _totalQuestionCountView, _answeredQuestionCountView,_skippedQuestionCountView;
     private Button forwardBtn, backwordBtn,finishBtn, _showAnswerBtn;
     private ViewPager viewPager;
-    private FrameLayout _resultLayout;
-    private RelativeLayout _examToolbar;
-    private CardView _examDashBoardView;
+
 
     private static ProgressDialog progressDialog;
     private static String _id;
@@ -59,18 +57,16 @@ public class ExamActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exam_layout);
         viewPager = findViewById(R.id.exam_swiper_viewPager);
 
-        _examDashBoardView = findViewById(R.id.exam_dashboard);
+
         _totalQuestionCountView = findViewById(R.id.exam_total_question_count);
         _answeredQuestionCountView = findViewById(R.id.exam_answered_question_count);
        // _skippedQuestionCountView = findViewById(R.id.exam_skipped_question_count);
-        _examToolbar = findViewById(R.id.exam_toolbar);
         _showAnswerBtn = findViewById(R.id.exam_btn_showAnswer);
 
 
         forwardBtn = findViewById(R.id.forward_btn);
         backwordBtn = findViewById(R.id.backword_btn);
         finishBtn = findViewById(R.id.finish_exam_btn);
-        _resultLayout = findViewById(R.id.exam_result_viewPager);
 
 
         // progress dialog
@@ -84,7 +80,6 @@ public class ExamActivity extends AppCompatActivity {
         // recover data from saved state
         if(savedInstanceState!=null){
             _questionList= (ArrayList<Question>) savedInstanceState.getSerializable("questionList");
-            progressDialog.dismiss();
         }
 
         init();
@@ -113,11 +108,10 @@ public class ExamActivity extends AppCompatActivity {
         forwardBtn =null;
         backwordBtn=null;
         finishBtn = null;
-        _examToolbar=null;
+
         _questionList =null;
         _app =null;
         _swipeAdaptor =null;
-        _resultLayout=null;
         fm=null;
 
 
@@ -181,10 +175,6 @@ public class ExamActivity extends AppCompatActivity {
         }
     };
 
-    public ArrayList<Question> getQuestionList(){
-        return _questionList;
-    }
-
 
     void finishTest(){
         //user interface setup
@@ -204,6 +194,8 @@ public class ExamActivity extends AppCompatActivity {
         if(_questionList==null){
             _app.getFirebaseDatabase().getReference("OnlineQuestionList")
                     .child(_id).addListenerForSingleValueEvent(valueEventListener);
+        }else {
+            setupUi();
         }
 
         // page scroll event listener
@@ -241,12 +233,8 @@ public class ExamActivity extends AppCompatActivity {
             }
 
 
-            displayExamUI(true);
-            _totalQuestionCountView.setText(String.valueOf(_questionList.size()));
-            _swipeAdaptor = new SwipeAdaptor(fm,_questionList==null?new ArrayList<Question>():_questionList);
-            viewPager.setAdapter(_swipeAdaptor);
-            updateExamStatusOnUi(0);
-            progressDialog.dismiss();
+
+            setupUi();
 
         }
 
@@ -292,35 +280,28 @@ public class ExamActivity extends AppCompatActivity {
         if (!_questionList.get(qNo).isAnswered) {
             _questionList.get(qNo).isAnswered = true;
             _questionCount++;
-            updateExamStatusOnUi(_questionCount);
+            _answeredQuestionCountView.setText(String.valueOf(_questionCount));
         }
     }
 
 
-    // for displaying exam current answered question/total question
-    void updateExamStatusOnUi(int answeredQuestCount){
-       // _questionStatusTxt.setText(String.valueOf(answeredQuestCount) + "/" + String.valueOf(totalCount));
-        _answeredQuestionCountView.setText(String.valueOf(answeredQuestCount));
-    }
+    void setupUi(){
+        _totalQuestionCountView.setText(String.valueOf(_questionList.size()));
+        _swipeAdaptor = new SwipeAdaptor(fm,_questionList==null?new ArrayList<Question>():_questionList);
+        viewPager.setAdapter(_swipeAdaptor);
 
-    void displayExamUI(Boolean show){
-        if(show){
-            _examDashBoardView.setVisibility(View.VISIBLE);
-            _examToolbar.setVisibility(View.VISIBLE);
-            viewPager.setVisibility(View.VISIBLE);
-            _resultLayout.setVisibility(View.GONE);
+        _answeredQuestionCountView.setText(String.valueOf(0));
+        progressDialog.dismiss();
 
-        }else{
-            _examDashBoardView.setVisibility(View.GONE);
-            _examToolbar.setVisibility(View.GONE);
-            viewPager.setVisibility(View.GONE);
-            _resultLayout.setVisibility(View.VISIBLE);
-        }
     }
 
     void displayAnswer(){
         if(_swipeAdaptor != null && viewPager != null){
-             _swipeAdaptor.getFragment(viewPager.getCurrentItem()).showAnswer();
+             PaperFragment fragment= _swipeAdaptor.getFragment(viewPager.getCurrentItem());
+             if(fragment!=null){
+                 fragment.showAnswer();
+             }
+
         }
 
     }

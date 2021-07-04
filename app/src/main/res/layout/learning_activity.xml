@@ -4,16 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/colorAccent"
     android:orientation="vertical">
-<Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Download"
-    android:onClick="downloadFile"/>
 
     <WebView android:id="@+id/learningPanel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="10dp"
         android:visibility="visible"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -21,5 +17,12 @@
         android:layout_marginLeft="10dp"
         android:background="@drawable/school_education_gradient">
     </WebView>
+
+    <com.nirwal.epoint.customViews.CustomCrd
+        android:id="@+id/learning_cust"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        app:fontSize="50dp"/>
 
 </LinearLayout>

@@ -4,6 +4,11 @@
         <attr name="radius" format="float"/>
         <attr name="backgroundColor" format="color"/>
         <attr name="strokeSize" format="float"/>
+    </declare-styleable>
 
+
+    <declare-styleable name="CustomCrd">
+        <attr name="fontSize" format="dimension"/>
+        <attr name="headerColor" format="color"/>
     </declare-styleable>
 </resources>

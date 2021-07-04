@@ -16,17 +16,13 @@ import com.nirwal.epoint.activities.ExamActivity;
 import com.nirwal.epoint.activities.MainActivity;
 import com.nirwal.epoint.MyApp;
 import com.nirwal.epoint.R;
+import com.nirwal.epoint.customViews.CustomCrd;
 import com.nirwal.epoint.models.ParentChildListItem;
 
 import java.util.ArrayList;
 
 public class MainCardAdaptor extends BaseAdapter {
 
-
-    private TextView title, h1, h2, h3, h4;
-    private Button readMoreBtn;
-    private LinearLayout mainCardHdr;
-    private ImageView main_card_favourites;
 
     ArrayList<ParentChildListItem> _mainCardList;
     ParentChildListItem _mainCard;
@@ -66,103 +62,35 @@ public class MainCardAdaptor extends BaseAdapter {
         _quizLists = _app.getSqlDb().readAllQuizListfromParentID(_mainCard.ChildId);
 
         if(view == null){
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_card,parent,false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_card_2,parent,false);
         }
 
-
-        mainCardHdr = view.findViewById(R.id.main_card_hdr);
-        title = view.findViewById(R.id.main_card_title);
-        h1 =view.findViewById(R.id.main_card_h1);
-        h2 = view.findViewById(R.id.main_card_h2);
-        h3 = view.findViewById(R.id.main_card_h3);
-        h4 = view.findViewById(R.id.main_card_h4);
-        main_card_favourites=view.findViewById(R.id.main_card_favourites);
-        readMoreBtn = view.findViewById(R.id.main_card_rm_btn);
-
-
-        init(_mainCard);
-
-        return view;
-    }
-
-    private void init(final ParentChildListItem mainCard){
-
-        mainCardHdr.setBackgroundColor(getColor());
-        title.setText(mainCard.Title);
-        readMoreBtn.setTag(mainCard);
-        readMoreBtn.setOnClickListener(readMoreBtnClickListener);
-        main_card_favourites.setOnClickListener(new View.OnClickListener() {
+        CustomCrd crd = view.findViewById(R.id.main_custom_card);
+        crd.setTitle(_mainCard.Title);
+        crd.setList(_app.getSqlDb().readAllQuizListfromParentID(_mainCardList.get(position).ChildId));
+        crd.setOnClickSectionItemListener(new CustomCrd.OnClickSectionItemListener() {
             @Override
-            public void onClick(View v) {
-                ((MainActivity)_context).setFavourites(mainCard);
+            public void onClick(ParentChildListItem item) {
+                if(item.ChildType.equals("Question1")){
+                    Intent i = new Intent(_context, ExamActivity.class);
+                    //i.putExtra("TITLE",item.Title);
+                    i.putExtra("ID",item.ChildId);
+                    _context.startActivity(i);
+                }else if(item.ChildType.equals("ParentChildListItem")){
+                    MainActivity activity = (MainActivity) _context;
+                    activity.startQuizListFragment(item);
+                }
+
             }
         });
 
 
-
-        if(_quizLists==null){return;}
-
-        if(_quizLists.size()==1)
-        {
-            setTxtElm(h1,_quizLists.get(0));
-        }
-        else if(_quizLists.size()==2)
-        {
-            setTxtElm(h1,_quizLists.get(0));
-            setTxtElm(h2,_quizLists.get(1));
-        }
-        else if(_quizLists.size()==3)
-        {
-            setTxtElm(h1,_quizLists.get(0));
-            setTxtElm(h2,_quizLists.get(1));
-            setTxtElm(h3,_quizLists.get(2));
-        }
-        else if(_quizLists.size()>=4)
-        {
-            setTxtElm(h1,_quizLists.get(0));
-            setTxtElm(h2,_quizLists.get(1));
-            setTxtElm(h3,_quizLists.get(2));
-            setTxtElm(h4,_quizLists.get(3));
-        }
-        _quizLists.clear();
-
-        //readMoreBtn.setOnClickListener(null);
-
-
+        return view;
     }
 
-   private void setTxtElm(TextView t,ParentChildListItem i){
-        t.setText(i.Title);
-        t.setTag(i);
-        t.setOnClickListener(listBtnClickListner);
 
-   }
 
-    private View.OnClickListener listBtnClickListner = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
 
-            ParentChildListItem item = (ParentChildListItem) v.getTag();
-            if(item.ChildType.equals("Question1")){
-                Intent i = new Intent(_context, ExamActivity.class);
-                //i.putExtra("TITLE",item.Title);
-                i.putExtra("ID",item.ChildId);
-                _context.startActivity(i);
-            }else if(item.ChildType.equals("ParentChildListItem")){
-                MainActivity activity = (MainActivity) _context;
-                activity.startQuizListFragment(item);
-            }
-
-        }
-    };
-
-    private View.OnClickListener readMoreBtnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            MainActivity mainActivity = (MainActivity) _context;
-            mainActivity.startQuizListFragment((ParentChildListItem) v.getTag());
-        }
-    };
 
 
     private int periviousNum = 0;
